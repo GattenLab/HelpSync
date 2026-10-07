@@ -1,0 +1,26 @@
+/* ヘッダー */
+header{position:sticky;top:0;background:var(--white);border-bottom:1px solid var(--gray-200);z-index:40}
+header>div{height:3.5rem;max-width:28rem;margin:0 auto;padding:0 1rem;display:flex;align-items:center;justify-content:space-between}
+/* ヘッダー内訳: 左=役割ラベル / 中央=ロゴ / 右=切替。左右を同幅(flex:1 1 0)にしてロゴを厳密に中央へ置く */
+.hd-side{flex:1 1 0;min-width:0;display:flex;align-items:center}
+.hd-side-r{justify-content:flex-end}
+.hd-role{font-size:.6875rem;white-space:nowrap}
+.hd-role-short{display:none}
+@media (max-width:374px){.hd-role-full{display:none}.hd-role-short{display:inline}} /* 360px以下では「エリアマネージャー」ではなく「エリアMgr」表記に切り替え、省略記号での欠けを避ける */
+/* ロゴのみのヘッダー（ログイン・欠勤報告・モーダル） */
+header>div.hd-solo{justify-content:center}
+
+/* モーダル */
+.modal{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;flex-direction:column}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:1rem;border-bottom:1px solid var(--gray-200);background:var(--white)}
+.modal-bd{flex:1;overflow-y:auto;padding:1rem}
+.modal-ft{padding:1rem;border-top:1px solid var(--gray-200);background:var(--white)}
+/* モーダル上部のロゴヘッダー: 一覧の表示領域を確保するため薄型（2.75rem）・縮小ロゴ（1.5rem） */
+.modal>header{flex:none}
+.modal>header>div{height:2.75rem}
+.modal>header .brand-logo{height:1.5rem;width:6.8rem}
+
+/* セクション見出し */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.section-hd h3{font-size:.875rem;font-weight:600;color:var(--fg)}
+.section-hd span{font-size:.75rem;color:var(--gray-500)}

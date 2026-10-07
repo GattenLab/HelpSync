@@ -1,0 +1,55 @@
+/* カード */
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:1rem}
+
+/* ボタン */
+.btn{display:flex;align-items:center;gap:.75rem;width:100%;padding:1rem;background:var(--green);color:var(--white);border-radius:var(--radius-xl);border:none;font-size:.875rem;font-weight:600;cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn2{padding:.75rem 1rem;border-radius:var(--radius-lg);border:none;font-size:.875rem;font-weight:600;cursor:pointer}
+
+/* バッジ */
+.badge{display:inline-block;font-size:.75rem;font-weight:500;padding:.125rem .5rem;border-radius:var(--radius-sm);border:1px solid}
+
+/* ロールボタン */
+.role-btn{width:100%;display:flex;align-items:center;gap:1rem;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-xl);padding:1rem 1.25rem;text-align:left;cursor:pointer}
+.role-btn:active{transform:scale(.98)}
+.role-icon{width:2.5rem;height:2.5rem;border-radius:var(--radius-lg);background:var(--green-10);display:flex;align-items:center;justify-content:center;color:var(--green)}
+
+/* プログレスバー */
+.progress-track{height:.375rem;background:var(--gray-50);border-radius:var(--radius-full);overflow:hidden;margin-top:.25rem}
+.progress-bar{height:100%;border-radius:var(--radius-full);transition:width 1s linear}
+
+/* スコアバー */
+.score-track{height:.375rem;background:var(--gray-50);border-radius:var(--radius-full);overflow:hidden}
+.score-bar{height:100%;border-radius:var(--radius-full)}
+
+/* ヒートマップバー */
+.heat-bar{height:.5rem;border-radius:var(--radius-full);background:var(--gray-100);overflow:hidden}
+.heat-fill{height:100%;border-radius:var(--radius-full)}
+.heat-high{background:var(--red)}
+.heat-medium{background:var(--amber)}
+.heat-low{background:var(--green)}
+
+/* SOSカード */
+.sos-card{padding:.875rem;border-radius:var(--radius-lg);border:1px solid}
+.sos-high{background:var(--red-50);border-color:#fecaca}
+.sos-medium{background:var(--amber-50);border-color:#fde68a}
+.sos-low{background:var(--green-50);border-color:#bbf7d0}
+
+/* 棒グラフ（CSS簡易） */
+.bar-chart{display:flex;align-items:flex-end;gap:.25rem;height:4rem;padding-top:.5rem}
+.bar-chart .bar{flex:1;border-radius:var(--radius-sm) var(--radius-sm) 0 0;min-height:.25rem;transition:height .3s ease}
+
+/* 画像ボタン（応募・応援を依頼する など、ボタン画像素材を使うボタン） */
+/* max-widthはボタン画像の実寸(1200x400px=3倍精細)に対応。#appがタブレット/PC幅(48rem/64rem)まで広がっても
+   ボタンだけが際限なく巨大化してテキストとのバランスが崩れないよう上限を設け、余った分は中央寄せする */
+.btn-img{display:block;width:100%;max-width:26.25rem;margin:0 auto;background:transparent;padding:0;border:none;border-radius:var(--radius-xl);overflow:hidden;cursor:pointer}
+.btn-img img{display:block;width:100%;pointer-events:none}
+.btn-img:active{transform:scale(.98)}
+.btn-img:disabled{cursor:not-allowed}
+.btn-img:disabled img{filter:grayscale(1);opacity:.4}
+
+
+/* HelpSync ロゴ — I.logo（SVG・縦横比 517:114）。端末差を避けるため width/height を両方指定する */
+.brand-logo{display:block;flex:none;height:1.75rem;width:7.94rem}
+/* 役割選択画面のロゴ（大きく表示。<h1 class="logo-hero"> 内で使用） */
+.logo-hero .brand-logo{height:3rem;width:13.61rem}

@@ -1,0 +1,78 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # validate.py の JS 構文チェック（node --check）に使用
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build (src → dist)
+        run: python3 tools/build.py
+
+      # 検証に失敗した場合はここで止まり、公開されない（CI=true のため node / manifest / sw.js が無い場合も失敗）
+      - name: Validate
+        run: python3 tools/validate.py dist/index.html
+
+      # 公開用ディレクトリを組み立てる: ルートのLP（index.html/hero.png/proposal.pdf）+ デモアプリ（dist/ → demo/）
+      # LPの「デモアプリ起動」「概要スライド」ボタンは ./demo/index.html ・ ./proposal.pdf という相対パスを前提にしているため、
+      # 両者を同じ公開ディレクトリの下に並べる必要がある（片方だけを upload-pages-artifact の path にすると、もう片方が一切公開されない）
+      - name: Assemble site (LP + demo/)
+        run: |
+          set -e
+          mkdir -p _site
+          cp index.html hero.png proposal.pdf favicon.ico _site/
+          cp -r dist _site/demo
+          python3 tools/inject_csp_lp.py _site/index.html
+
+      # LPが参照するファイルが実際に揃っているかを確認する（欠けたまま公開してリンク切れになるのを防ぐ）
+      - name: Verify site assembly
+        run: |
+          set -e
+          test -s _site/index.html   || { echo '::error::_site/index.html がありません'; exit 1; }
+          test -s _site/hero.png     || { echo '::error::_site/hero.png がありません'; exit 1; }
+          test -s _site/proposal.pdf || { echo '::error::_site/proposal.pdf がありません'; exit 1; }
+          test -s _site/favicon.ico || { echo '::error::_site/favicon.ico がありません'; exit 1; }
+          test -s _site/demo/index.html || { echo '::error::_site/demo/index.html がありません'; exit 1; }
+          grep -q 'HelpSync' _site/index.html || { echo '::error::_site/index.html の中身が想定と異なります'; exit 1; }
+          echo "OK: $(du -sh _site | cut -f1) を公開します"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

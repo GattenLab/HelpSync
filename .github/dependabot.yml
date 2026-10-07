@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # このリポジトリに npm/pip 等の依存関係マニフェスト（package.json, requirements.txt 等）は無いため
+  # （デモアプリは無依存のプレーンJS、tools/*.py も標準ライブラリのみ）、
+  # 実際に更新対象が存在する github-actions エコシステムだけを監視する。
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "github-actions"

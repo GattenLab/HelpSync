@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="/* INJECT_CSP */">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HelpSync - ユニット型ヘルプ調整システム</title>
+  <link rel="icon" href="./favicon.ico">
+  <style>
+    :root {
+      --brand-green: #0d5c2e;
+      --brand-green-hover: #084320;
+      --brand-red: #e50012;
+      --brand-red-hover: #c40010;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .lp-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* カラーアクセントバー */
+    .brand-bar {
+      height: 6px;
+      background: linear-gradient(90deg, var(--brand-green) 80%, var(--brand-red) 80%);
+      border-radius: 3px;
+    }
+
+    /* メインビジュアルコンテナ */
+    .hero-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+    }
+
+    .hero-image-wrapper {
+      width: 100%;
+      background: #ffffff;
+      line-height: 0;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* アクションバー */
+    .action-bar {
+      padding: 20px;
+      background: var(--card-bg);
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      flex: 1;
+      min-width: 280px;
+      min-height: 56px;
+      padding: 14px 24px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: none;
+      text-align: center;
+    }
+
+    .btn-demo {
+      background-color: var(--brand-green);
+      color: #ffffff;
+    }
+    .btn-demo:hover, .btn-demo:active {
+      background-color: var(--brand-green-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(13, 92, 46, 0.4);
+    }
+
+    .btn-pdf {
+      background-color: transparent;
+      color: #ffffff;
+      border: 2px solid var(--brand-red);
+    }
+    .btn-pdf:hover, .btn-pdf:active {
+      background-color: var(--brand-red);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(229, 0, 18, 0.4);
+    }
+
+    /* キーボード操作ヒント */
+    .shortcut-hints {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: -8px;
+      margin-bottom: 8px;
+    }
+
+    kbd {
+      background: #334155;
+      color: #f8fafc;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      border: 1px solid #475569;
+    }
+
+    /* PDFプレビューセクション */
+    .pdf-section {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .pdf-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .pdf-frame-container {
+      width: 100%;
+      height: 580px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0f172a;
+    }
+
+    .pdf-frame-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* 埋め込みの成否に関わらず常時表示する「新しいタブで開く」導線。
+       iframeは<object>と違い「失敗時だけ代替表示」という仕組みを持たないため、
+       ブロックされた場合でも迷わず開けるよう、リンクは条件分岐せず常に表示する */
+    .pdf-open-link {
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .pdf-open-link a {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .pdf-open-link a:hover,
+    .pdf-open-link a:active {
+      color: #ffffff;
+    }
+
+    /* スマホ専用表示エリア */
+    .mobile-pdf-card {
+      display: none;
+      background: #0f172a;
+      border: 1px dashed var(--border-color);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .mobile-pdf-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      body { padding: 10px 8px; }
+      .action-bar { flex-direction: column; padding: 16px; }
+      .action-btn { width: 100%; min-width: 100%; }
+      .shortcut-hints { display: none; }
+      .pdf-frame-container { display: none; }
+      .mobile-pdf-card { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lp-wrapper">
+    <div class="brand-bar"></div>
+
+    <!-- メインビジュアル ＋ アクションボタン -->
+    <main class="hero-container">
+      <div class="hero-image-wrapper">
+        <img src="./hero.png" alt="HelpSync 店舗の人が足りないをチームの力に変える" class="hero-image" loading="eager">
+      </div>
+
+      <div class="action-bar">
+        <!-- フォルダ一覧をスキップし直接index.htmlを起動 -->
+        <a href="./demo/index.html" target="_blank" rel="noopener noreferrer" class="action-btn btn-demo" id="btn-demo">
+          🚀 デモアプリ起動 <span style="font-size:0.8em; opacity:0.8;">[1]</span>
+        </a>
+
+        <!-- PDF直接起動 -->
+        <a href="./proposal.pdf" target="_blank" rel="noopener noreferrer" class="action-btn btn-pdf" id="btn-pdf">
+          📄 概要スライド (PDF) <span style="font-size:0.8em; opacity:0.8;">[2]</span>
+        </a>
+      </div>
+
+      <div class="shortcut-hints">
+        <span>キーボード操作: <kbd>1</kbd> デモ起動 | <kbd>2</kbd> PDF表示 | <kbd>F</kbd> 全画面切替</span>
+      </div>
+    </main>
+
+    <!-- PDF資料表示エリア -->
+    <section class="pdf-section">
+      <h2 class="pdf-title">📊 システム詳細資料</h2>
+
+      <!-- PC/ローカル向け。<object>ではなく、より広く・安定して対応している<iframe>で埋め込む -->
+      <div class="pdf-frame-container">
+        <iframe src="./proposal.pdf" title="概要スライド（PDF）"></iframe>
+      </div>
+      <!-- 埋め込みが見られない環境でも迷わないよう、常時表示の「新しいタブで開く」導線 -->
+      <p class="pdf-open-link">
+        <a href="./proposal.pdf" target="_blank" rel="noopener noreferrer">📄 新しいタブでPDFを開く</a>
+      </p>
+
+      <!-- スマホ向け（全画面閲覧誘導） -->
+      <div class="mobile-pdf-card">
+        <p>スマートフォンで資料を閲覧する場合は、以下のボタンから全画面表示でご覧ください。</p>
+        <a href="./proposal.pdf" target="_blank" rel="noopener noreferrer" class="action-btn btn-pdf" style="width: 100%;">
+          📄 資料PDFを全画面で開く
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- インラインスクリプト（プレゼン操作・全画面切替） -->
+  <script>
+    if (window.top !== window.self) { window.top.location = window.self.location.href; }
+    document.addEventListener('DOMContentLoaded', () => {
+      const demoBtn = document.getElementById('btn-demo');
+      const pdfBtn = document.getElementById('btn-pdf');
+
+      document.addEventListener('keydown', (event) => {
+        // 入力フォーム操作中はショートカットキーを無効化
+        const activeElement = document.activeElement;
+        const isInputText = activeElement && (
+          activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA' ||
+          activeElement.isContentEditable
+        );
+        if (isInputText) return;
+
+        switch (event.key) {
+          case '1':
+            if (demoBtn) {
+              event.preventDefault();
+              demoBtn.click();
+            }
+            break;
+
+          case '2':
+            if (pdfBtn) {
+              event.preventDefault();
+              pdfBtn.click();
+            }
+            break;
+
+          case 'f':
+          case 'F':
+            event.preventDefault();
+            toggleFullScreen();
+            break;
+        }
+      });
+
+      function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

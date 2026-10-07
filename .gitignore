@@ -1,0 +1,11 @@
+# ビルド成果物（GitHub Actions が生成して公開する。コミット不要）
+dist/
+_site/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db

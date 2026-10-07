@@ -1,0 +1,50 @@
+name: Security Scan
+
+# PR作成時と main へのプッシュ時に、コードの静的解析(SAST)と秘密情報の誤コミットを自動チェックする。
+# deploy.yml とは別ワークフロー: デプロイの成否とセキュリティスキャンの成否を切り分けるため。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: CodeQL (SAST)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write   # 検出結果を Security タブに送るために必要
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript
+          build-mode: none   # このリポジトリのJSはビルド(コンパイル)不要な静的ソースのため
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:javascript"
+
+  secret-scan:
+    name: Secret Scan (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 履歴全体を見て、過去のコミットに混入した秘密情報も検出する
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

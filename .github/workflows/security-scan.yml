@@ -22,7 +22,7 @@ jobs:
       security-events: write   # 検出結果を Security タブに送るために必要
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0   # 履歴全体を見て、過去のコミットに混入した秘密情報も検出する
 
